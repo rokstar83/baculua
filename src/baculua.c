@@ -14,9 +14,9 @@
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
 #include <stdlib.h>
-#include "baculua_error.h"
 #include "baculua.h"
 #include "util.h"
+#include "baculua_error.h"
 
 /* registration structure */
 static const struct luaL_reg baculua_lib[] =
@@ -27,55 +27,63 @@ static const struct luaL_reg baculua_lib[] =
 	 {NULL, NULL},
 };
 
-/* get_monitor(director_name, host_name, client_name, passwd, [portno]) */
+/* -----------------------------------------------------
+	 expected lua syntax:
+	 -------------------
+	    get_monitor(director_name, host_name, client_name, 
+			            passwd, [portno]) 
+	 return value:
+	 ------------
+	    monitor class (on success)
+			nil, error string (on error)
+   ----------------------------------------------------- */
 static int baculua_get_monitor(lua_State * L)
 {
-	 bacula_mon * monitor = malloc(sizeof(bacula_mon));
+	 monitor * mon = malloc(sizeof(monitor));
 	 int count = lua_gettop(L);
 	 
-	 monitor->class_name = BACULA_MON_NAME;
-	 monitor->director_name = luaL_checkstring(L, 1);
-	 monitor->director_host_name = luaL_checkstring(L, 2);
-	 monitor->client_name = luaL_checkstring(L, 3);
-	 monitor->passwd = luaL_checkstring(L, 4);
-	 monitor->portno = (count > 4 ? luaL_checknumber(L, 5) : DEFAULT_DIRECTOR_PORTNO);
+	 mon->director_name = luaL_checkstring(L, 1);
+	 mon->director_host_name = luaL_checkstring(L, 2);
+	 mon->client_name = luaL_checkstring(L, 3);
+	 mon->passwd = luaL_checkstring(L, 4);
+	 mon->portno = (count > 4 ? luaL_checknumber(L, 5) : DEFAULT_DIRECTOR_PORTNO);
 
 	 lua_newtable(L);
 
-	 lua_pushstring(L, "class_name");
-	 lua_pushstring(L, monitor->class_name);
-	 lua_settable(L, -3);
-
 	 lua_pushstring(L, "director_name");
-	 lua_pushstring(L, monitor->director_name);
+	 lua_pushstring(L, mon->director_name);
 	 lua_settable(L, -3);
 
 	 lua_pushstring(L, "director_host_name");
-	 lua_pushstring(L, monitor->director_host_name);
+	 lua_pushstring(L, mon->director_host_name);
 	 lua_settable(L, -3);
 
    lua_pushstring(L, "client_name");
-	 lua_pushstring(L, monitor->client_name);
+	 lua_pushstring(L, mon->client_name);
 	 lua_settable(L, -3);
 
    lua_pushstring(L, "passwd");
-	 lua_pushstring(L, monitor->passwd);
+	 lua_pushstring(L, mon->passwd);
 	 lua_settable(L, -3);
 
    lua_pushstring(L, "portno");
-	 lua_pushnumber(L, monitor->portno);	 
+	 lua_pushnumber(L, mon->portno);	 
 	 lua_settable(L, -3);
 
 	 return 1;
 }
 
-/* director_status(self) */
+/* -----------------------------------------------
+	 expected lua syntax: 
+	 -------------------
+	    director_status(monitor)
+   ----------------------------------------------- */
 static int baculua_director_status(lua_State * L)
 {	 
-	 bacula_mon mon;
+	 monitor mon;
 	 char * msg;
 
-	 if(get_monitor(L, &mon) != 0) {
+	 if(lua_checkmonitor(L, &mon) != 0) {
 			lua_pushnil(L);
 			lua_pushstring(L, get_error_string());
 			return 2;
@@ -93,12 +101,17 @@ static int baculua_director_status(lua_State * L)
 	 return 1;
 }
 
+/* -----------------------------------------------
+	 expected lua syntax: 
+	 -------------------
+	    messages(monitor)
+   ----------------------------------------------- */
 static int baculua_messages(lua_State * L)
 {
-	 bacula_mon mon;
+	 monitor mon;
 	 char * msg;
 
-	 if(get_monitor(L, &mon) != 0) {
+	 if(lua_checkmonitor(L, &mon) != 0) {
 			lua_pushnil(L);
 			lua_pushstring(L, get_error_string());
 			return 2;

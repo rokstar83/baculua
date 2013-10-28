@@ -1,6 +1,5 @@
-
 /*****************************************************************************/ 
-/* util.h for baculua                                                        */
+/* monitor.h for baculua                                                     */
 /* Copyright (c) 2013 Tom Hartman (rokstar83@gmail.com)                      */
 /*                                                                           */
 /* This program is free software; you can redistribute it and/or             */
@@ -14,12 +13,3 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
-#ifndef UTIL_H_
-#define UTIL_H_
-
-#include <lua.h>
-#include "monitor.h"
-
-char * do_bacula_cmd(monitor * mon, const char * cmd);
-
-#endif /* UTIL_H_ */

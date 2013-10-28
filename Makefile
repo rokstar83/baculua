@@ -6,7 +6,7 @@ BIN_DIR=bin
 vpath %.c ${SRC_DIR}
 vpath %.h ${SRC_DIR}
 
-SRC_FILES=baculua.c
+SRC_FILES=baculua.c baculua_error.c util.c monitor.c
 OBJS=$(patsubst %.c,${BIN_DIR}/%.o, ${SRC_FILES})
 LDFLAGS=-llua
 LUA_SO = baculua.so
@@ -22,7 +22,6 @@ baculua: ${OBJS}
 	${CXX} -shared -Wl,-soname,baculua.so -o ${BIN_DIR}/baculua.so ${OBJS}
 
 ${BIN_DIR}/%.o: %.c
-	echo $<
 	${CXX} ${OPTS} -c $< -o $@ ${LDFLAG}
 
 tests:

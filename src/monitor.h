@@ -1,6 +1,5 @@
-
 /*****************************************************************************/ 
-/* util.h for baculua                                                        */
+/* monitor.h for baculua                                                     */
 /* Copyright (c) 2013 Tom Hartman (rokstar83@gmail.com)                      */
 /*                                                                           */
 /* This program is free software; you can redistribute it and/or             */
@@ -14,12 +13,30 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
-#ifndef UTIL_H_
-#define UTIL_H_
-
+#ifndef MONITOR_H_
+#define MONITOR_H_
 #include <lua.h>
-#include "monitor.h"
+#include <netinet/in.h>
 
-char * do_bacula_cmd(monitor * mon, const char * cmd);
+const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
 
-#endif /* UTIL_H_ */
+typedef struct {
+	 /* connection information */
+	 const char * director_name;
+	 const char * director_host_name;
+	 const char * client_name;
+	 const char * passwd;
+	 unsigned int portno;
+
+	 /* sockets and whatnot */
+	 int sock;
+	 struct sockaddr_in sin;
+} monitor;
+
+int lua_checkmonitor(lua_State *L, monitor * mon);
+int connect_monitor(monitor * mon);
+void disconnect_monitor(monitor * mon);
+int send_message(monitor * mon, const char * cmd);
+char * receive_message(monitor * mon);
+
+#endif /* MONITOR_H_ */

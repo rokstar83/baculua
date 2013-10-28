@@ -13,29 +13,14 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
+#ifndef BACULUA_H_
+#define BACULUA_H_
+
 #include <lua.h>
 #include <lauxlib.h>
-#include <netinet/in.h>
-
-const char * BACULA_MON_NAME = "bacula_mon";
-const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
-
-typedef struct {	 
-	 /* name of corresponding lua class */
-	 const char * class_name;
-
-	 /* connection information */
-	 const char * director_name;
-	 const char * director_host_name;
-	 const char * client_name;
-	 const char * passwd;
-	 unsigned int portno;
-
-	 /* sockets and whatnot */
-	 int sock;
-	 struct sockaddr_in sockInfo;
-} bacula_mon;
 
 static int baculua_get_monitor(lua_State * L);
 static int baculua_director_status(lua_State * L);
 static int baculua_messages(lua_State * L);
+
+#endif /* BACULUA_H_ */

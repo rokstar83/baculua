@@ -13,6 +13,11 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
+#ifndef BACULUA_ERROR_H_
+#define BACULUA_ERROR_H_
+
 char error_str[100];
 
 char * get_error_string();
+
+#endif /* BACULUA_ERROR_H_ */

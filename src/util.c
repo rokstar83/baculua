@@ -15,42 +15,20 @@
 /*****************************************************************************/
 #include "util.h"
 
-int get_monitor(lua_State *L, bacula_mon * mon)
+char * do_bacula_cmd(monitor * mon, const char * cmd)
 {
-	 if(!lua_istable(L, -1)) {
-			sprintf(error_str, "bad parameter, expected %s", "baculua_mon");
-			return 1;
+	 int err;
+	 char * retval = NULL;
+	 if((err = connect_monitor(mon)) != 0) {
+			return retval;
 	 }
 
-	 lua_pushstring(L, "director_name");
-	 lua_gettable(L, -2);
-	 mon->director_name = luaL_checkstring(L, -1);
-	 lua_pop(L, 1);
+	 if((err = send_message(mon, cmd)) != 0) {
+			disconnect_monitor(mon);
+			return retval;
+	 }
 
-	 lua_pushstring(L, "director_host_name");
-	 lua_gettable(L, -2);
-	 mon->director_host_name = luaL_checkstring(L, -1);
-	 lua_pop(L, 1);
-
-	 lua_pushstring(L, "client_name");
-	 lua_gettable(L, -2);
-	 mon->client_name = luaL_checkstring(L, -1);
-	 lua_pop(L, 1);
-
-   lua_pushstring(L, "passwd");
-	 lua_gettable(L, -2);
-	 mon->passwd = luaL_checkstring(L, -1);
-	 lua_pop(L, 1);
-
-   lua_pushstring(L, "portno");
-	 lua_gettable(L, -2);
-	 mon->portno = luaL_checknumber(L, -1);
-	 lua_pop(L, 1);
-	 
-	 return 0;
-}
-
-char * do_bacula_cmd(bacula_mon * mon, const char * cmd)
-{
-	 
+	 retval = receive_message(mon);
+	 disconnect_monitor(mon);
+	 return retval;
 }
