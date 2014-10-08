@@ -67,8 +67,7 @@ int connect_monitor(monitor * mon, int timeout)
    disconnect_monitor(mon);
 
    if((mon->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-      sprintf(error_str, "%s", "Could not create new socket ");
-      return 1;
+      return E_MONITOR_NO_SOCKET;
    }
 
    mon->sin.sin_family = AF_INET;
@@ -81,7 +80,7 @@ int connect_monitor(monitor * mon, int timeout)
       int x;
 
       if((he = gethostbyname(mon->director_host_name)) == NULL) {
-         return 2;
+         return E_MONITOR_NO_HOST;
       }
 
       addr_list = (struct in_addr**) he->h_addr_list;
@@ -92,10 +91,7 @@ int connect_monitor(monitor * mon, int timeout)
       
    
    if(inet_pton(AF_INET, mon->director_host_ip, &(mon->sin.sin_addr)) <= 0) {
-      sprintf(error_str, "Error with hostname `%s', ip address `%s`", 
-              mon->director_host_name,
-              inet_ntoa(mon->sin.sin_addr));
-      return 3;
+      return E_MONITOR_ADDY_CONVERT;
    }
 
    /* Set to nonblocking */
@@ -103,15 +99,13 @@ int connect_monitor(monitor * mon, int timeout)
       long arg;
       
       if((arg = fcntl(mon->sock, F_GETFL, NULL)) < 0) {
-         sprintf(error_str, "Error retrieving socket flags, %s\n", strerror(errno));
-         return 4;
+         return E_MONITOR_GET_SOCK_FLAG;
       }
 
       arg |= O_NONBLOCK;
       
       if(fcntl(mon->sock, F_SETFL, arg) < 0) {
-         sprintf(error_str, "Error setting socket flags to nonblocking, %s\n", strerror(errno));
-         return 4;
+         return E_MONITOR_SET_SOCK_FLAG;
       }
    }
    
@@ -133,34 +127,31 @@ int connect_monitor(monitor * mon, int timeout)
                FD_SET(mon->sock, &fds);
                res = select(mon->sock+1, NULL, &fds, NULL, &tv);
                if(res < 0 && errno != EINTR) { /* Error while connecting */
-                  sprintf(error_str, "Error connecting %s\n", strerror(errno));
-                  return 5;
-               } else if(res > 0) { /* socket selected */
+                  return E_MONITOR_SELECT;
+               } else if(res > 0) { /* socket selected */                  
                   break;
                } else { /* timeout */
-                  return 6;
+                  return E_MONITOR_TIMEOUT;
                }
             } while (1);
          }
       }      
    }
 
-   /* Reset to blocking */
+   /* Reset socket back to blocking */
    {
       long arg;
       if((arg = fcntl(mon->sock, F_GETFL, NULL)) < 0) {
-         sprintf(error_str, "Error retrieving socket flags, %s\n", strerror(errno));
-         return 4;
+         return E_MONITOR_GET_SOCK_FLAG;
       }
       
       arg &= (~O_NONBLOCK);
       if(fcntl(mon->sock, F_SETFL, arg) < 0) {
-         sprintf(error_str, "Error setting socket flags back to blocking, %s\n", strerror(errno));
-         return 4;
+         return E_MONITOR_SET_SOCK_FLAG;
       }
    }
 
-   return 0;
+   return E_SUCCESS;
 }
 
 void disconnect_monitor(monitor * mon)
@@ -174,6 +165,8 @@ void disconnect_monitor(monitor * mon)
 
 int send_message(monitor * mon, const char * cmd)
 {
+   
+   
    return 0;
 }
 

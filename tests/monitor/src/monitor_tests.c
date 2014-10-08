@@ -32,16 +32,15 @@ void test_connect_monitor()
    err = connect_monitor(&mon, 3);
    disconnect_monitor(&mon);
 
-   CU_ASSERT(err == 0);
+   CU_ASSERT_EQUAL(err, E_SUCCESS);
 }
 
 void test_bad_connect()
 {
+   /* Test connecting to a non-existant host */
    {
       monitor mon;
-      int err;
-      
-      /* Test connecting to a non-existant host */
+      int err;      
       
       mon.sock = 0;
       mon.director_name = "bad_host";
@@ -51,7 +50,7 @@ void test_bad_connect()
       err = connect_monitor(&mon, 3);
       disconnect_monitor(&mon);
       
-      CU_ASSERT_EQUAL(err, 2);
+      CU_ASSERT_EQUAL(err, E_MONITOR_NO_HOST);
    }
 
    /* Test connecting to an existing host, but one that isn't listening on 
@@ -69,8 +68,22 @@ void test_bad_connect()
       err = connect_monitor(&mon, 3);
       disconnect_monitor(&mon);
       
-      CU_ASSERT_EQUAL(err, 6);
+      CU_ASSERT_EQUAL(err, E_MONITOR_TIMEOUT);
    }
+}
+
+void test_send_message()
+{
+   {
+      monitor mon;
+      int err;
+      
+      mon.sock = 0;
+      mon.director_name = "homer";
+      mon.director_host_name = "homer";      
+   }
+
+   CU_FAIL("Test not implemented");
 }
 
 /* END TEST DEFINITIONS */
@@ -83,6 +96,7 @@ CU_pSuite monitor_test_suite()
 
   CU_add_test(suite, "test_connect_monitor", test_connect_monitor);
   CU_add_test(suite, "test_bad_connect", test_bad_connect);
+  CU_add_test(suite, "test_send_message", test_send_message);
   /* ADD TESTS TO SUITE HERE */
 
   return suite;
