@@ -18,19 +18,20 @@
 #include <lua.h>
 #include <netinet/in.h>
 
-const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
+static const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
 
 typedef struct {
-	 /* connection information */
-	 const char * director_name;
-	 const char * director_host_name;
-	 const char * client_name;
-	 const char * passwd;
-	 unsigned int portno;
+   /* connection information */
+   const char * director_name;
+   const char * director_host_name;
+   const char director_host_ip[20];
+   const char * client_name;
+   const char * passwd;
+   unsigned int portno;
 
-	 /* sockets and whatnot */
-	 int sock;
-	 struct sockaddr_in sin;
+   /* sockets and whatnot */
+   int sock;
+   struct sockaddr_in sin;
 } monitor;
 
 int lua_checkmonitor(lua_State *L, monitor * mon);
