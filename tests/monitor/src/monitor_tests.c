@@ -29,7 +29,7 @@ void test_connect_monitor()
    mon.director_host_name = "homer";
    mon.portno = DEFAULT_DIRECTOR_PORTNO;
 
-   err = connect_monitor(&mon);
+   err = connect_monitor(&mon, 3);
    disconnect_monitor(&mon);
 
    CU_ASSERT(err == 0);
@@ -48,7 +48,7 @@ void test_bad_connect()
       mon.director_host_name = "bad_host";
       mon.portno = DEFAULT_DIRECTOR_PORTNO;
       
-      err = connect_monitor(&mon);
+      err = connect_monitor(&mon, 3);
       disconnect_monitor(&mon);
       
       CU_ASSERT_EQUAL(err, 2);
@@ -61,18 +61,15 @@ void test_bad_connect()
       int err;
       struct timeval timout;
 
-
-      timeout.tv_sec = 3;
-      timeout.tv_usec = 0;
       mon.sock = 0;
       mon.director_name = "google";
       mon.director_host_name = "google.com";
       mon.portno = DEFAULT_DIRECTOR_PORTNO;
       
-      err = connect_monitor(&mon);
+      err = connect_monitor(&mon, 3);
       disconnect_monitor(&mon);
       
-      CU_ASSERT_EQUAL(err, 4);
+      CU_ASSERT_EQUAL(err, 6);
    }
 }
 

@@ -35,7 +35,7 @@ typedef struct {
 } monitor;
 
 int lua_checkmonitor(lua_State *L, monitor * mon);
-int connect_monitor(monitor * mon);
+int connect_monitor(monitor * mon, int timeout);
 void disconnect_monitor(monitor * mon);
 int send_message(monitor * mon, const char * cmd);
 char * receive_message(monitor * mon);

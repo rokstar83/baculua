@@ -1,3 +1,9 @@
 src/*~
 bin/*.o
 bin/*.so
+
+*.in
+*.o
+/tests/monitor/src/monitor_tests.o
+/tests/monitor/src/monitor_tests
+/tests/monitor/src/monitor.o
