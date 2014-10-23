@@ -15,6 +15,7 @@
 /*****************************************************************************/
 #include <lua.h>
 #include <lauxlib.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -80,7 +81,7 @@ int connect_monitor(monitor * mon, int timeout)
       int x;
 
       if((he = gethostbyname(mon->director_host_name)) == NULL) {
-         return E_MONITOR_NO_HOST;
+        return E_MONITOR_NO_HOST;
       }
 
       addr_list = (struct in_addr**) he->h_addr_list;
@@ -112,7 +113,7 @@ int connect_monitor(monitor * mon, int timeout)
    /* connect to monitor */
    {
       struct timeval tv;
-      fd_set fds;
+      fd_set readfds, writefds;
       int res;
 
       tv.tv_sec = timeout;
@@ -123,12 +124,16 @@ int connect_monitor(monitor * mon, int timeout)
       if(res < 0) {
          if(errno == EINPROGRESS) {
             do {
-               FD_ZERO(&fds);
-               FD_SET(mon->sock, &fds);
-               res = select(mon->sock+1, NULL, &fds, NULL, &tv);
+               FD_ZERO(&readfds);
+               FD_ZERO(&writefds);
+               FD_SET(mon->sock, &readfds);
+               FD_SET(mon->sock, &writefds);
+               res = select(mon->sock+1, &readfds, &writefds, NULL, &tv);
                if(res < 0 && errno != EINTR) { /* Error while connecting */
                   return E_MONITOR_SELECT;
-               } else if(res > 0) { /* socket selected */                  
+               } else if(errno == EINTR) {
+                  continue;
+               } else if(res > 0) { /* socket selected */
                   break;
                } else { /* timeout */
                   return E_MONITOR_TIMEOUT;
@@ -163,14 +168,47 @@ void disconnect_monitor(monitor * mon)
    }
 }
 
-int send_message(monitor * mon, const char * cmd)
+int send_message(monitor * mon, const char * msg)
 {
-   
-   
-   return 0;
+   int32_t buf[MAX_BUF_LEN] = {0};
+   int32_t * tmp;
+   size_t buflen, msglen, sendlen;
+
+   if(mon->sock == 0) {
+      return E_MONITOR_NOT_CONNECTED;
+   }
+
+   msglen = strlen(msg);
+   buflen = msglen + sizeof(int32_t);
+
+   *buf = htonl(msglen);
+   tmp = buf+1;
+   memcpy((void*)tmp, msg, MAX_BUF_LEN);
+
+   sendlen = send(mon->sock, buf, buflen, 0);
+   if(sendlen != buflen) {
+      
+      return E_MONITOR_BAD_SEND;
+   }
+
+   return E_SUCCESS;
 }
 
-char * receive_message(monitor * mon)
+int receive_message(monitor * mon, char * msg, int msglen)
 {
-   return NULL;
+   int size;
+   if(mon->sock == 0) {
+      return E_MONITOR_NOT_CONNECTED;
+   }
+
+   size = recv(mon->sock, (void*)msg, msglen, 0);
+   if(size == 0) {
+      return E_MONITOR_NO_MSG;
+   }
+
+   if(size == -1) {
+      return E_MONITOR_BAD_RECV;
+   }
+
+   return E_SUCCESS;
 }

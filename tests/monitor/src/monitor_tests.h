@@ -21,6 +21,7 @@
 void test_connect_monitor();
 void test_bad_connect();
 void test_send_message();
+void test_receive_message();
 /* END TEST PROTOTYPES */
 
 CU_pSuite monitor_test_suite();

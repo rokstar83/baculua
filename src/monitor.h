@@ -18,6 +18,7 @@
 #include <lua.h>
 #include <netinet/in.h>
 
+#define MAX_BUF_LEN 100
 static const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
 
 typedef struct {
@@ -38,6 +39,6 @@ int lua_checkmonitor(lua_State *L, monitor * mon);
 int connect_monitor(monitor * mon, int timeout);
 void disconnect_monitor(monitor * mon);
 int send_message(monitor * mon, const char * cmd);
-char * receive_message(monitor * mon);
+int receive_message(monitor * mon, char * msg, int msglen);
 
 #endif /* MONITOR_H_ */

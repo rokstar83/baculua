@@ -28,6 +28,10 @@ enum _baculua_error
    E_MONITOR_SET_SOCK_FLAG = -5,
    E_MONITOR_SELECT = -6,
    E_MONITOR_TIMEOUT = -7,
+   E_MONITOR_NOT_CONNECTED = -8,
+   E_MONITOR_BAD_SEND = -10,
+   E_MONITOR_NO_MSG = -11,
+   E_MONITOR_BAD_RECV = -12,
 };
 
 typedef enum _baculua_error baculua_error_t;
@@ -47,6 +51,10 @@ struct {
    { E_MONITOR_SELECT, "Error while attempting to connect to host" },
    { E_MONITOR_TIMEOUT, "Timeout occured before connection could be "
                         "established with host" },
+   { E_MONITOR_NOT_CONNECTED, "Not connected to monitor" },
+   { E_MONITOR_BAD_SEND, "Sending message to monitor failed." },
+   { E_MONITOR_NO_MSG, "No message available from directory." },
+   { E_MONITOR_BAD_RECV, "Error while attempting to read daat from directory." },
 };
 
 char error_str[100];

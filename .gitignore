@@ -39,3 +39,4 @@ bin/*.so
 /tests/Makefile
 /tests/monitor/src/main.o
 /tests/monitor/src/monitor_tests.c~
+/.tests
