@@ -20,6 +20,7 @@
 
 #define MAX_BUF_LEN 100
 static const unsigned int DEFAULT_DIRECTOR_PORTNO = 9101;
+static const unsigned int DEFAULT_MONITOR_TIMEOUT = 10000; /* ten seconds */
 
 typedef struct {
    /* connection information */
@@ -33,9 +34,11 @@ typedef struct {
    /* sockets and whatnot */
    int sock;
    struct sockaddr_in sin;
+   unsigned int timeout;
 } monitor;
 
 int lua_checkmonitor(lua_State *L, monitor * mon);
+void init_monitor(monitor * mon);
 int connect_monitor(monitor * mon, int timeout);
 void disconnect_monitor(monitor * mon);
 int send_message(monitor * mon, const char * cmd);

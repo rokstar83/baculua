@@ -62,6 +62,14 @@ int lua_checkmonitor(lua_State *L, monitor * mon)
    return 0;
 }
 
+void init_monitor(monitor * mon)
+{
+   mon->sock = 0;
+   mon->director_name = "";
+   mon->director_host_name = "";
+   mon->portno = DEFAULT_DIRECTOR_PORTNO;
+}
+
 int connect_monitor(monitor * mon, int timeout)
 {
    /* kill any connections that already exist */
