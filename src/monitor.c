@@ -179,7 +179,6 @@ void disconnect_monitor(monitor * mon)
 int send_message(monitor * mon, const char * msg)
 {
    int32_t buf[MAX_BUF_LEN] = {0};
-   int32_t * tmp;
    size_t buflen, msglen, sendlen;
 
    if(mon->sock == 0) {
@@ -190,8 +189,7 @@ int send_message(monitor * mon, const char * msg)
    buflen = msglen + sizeof(int32_t);
 
    *buf = htonl(msglen);
-   tmp = buf+1;
-   memcpy((void*)tmp, msg, MAX_BUF_LEN);
+   memcpy((void*)(buf+1), msg, MAX_BUF_LEN);
 
    sendlen = send(mon->sock, buf, buflen, 0);
    if(sendlen != buflen) {
