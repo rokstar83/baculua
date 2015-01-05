@@ -31,14 +31,18 @@ enum _baculua_error
    E_MONITOR_NOT_CONNECTED = -8,
    E_MONITOR_BAD_SEND = -10,
    E_MONITOR_NO_MSG = -11,
-   E_MONITOR_BAD_RECV = -12,
+   E_MONITOR_BAD_SELECT = -12,
+   E_MONITOR_RECV_TIMEOUT = -13,
+   E_MONITOR_BAD_RECV = -14,
+   E_MONITOR_BAD_SCAN_CHALLENGE = -15,
+   E_MONITOR_AUTH_FAILED = -16,
 };
 
 typedef enum _baculua_error baculua_error_t;
 
 struct {
    baculua_error_t err;
-   char * message;
+   char * msg;
 } static baculua_error_desc[] = {
    { E_SUCCESS, "No error" },
 
@@ -53,9 +57,16 @@ struct {
                         "established with host" },
    { E_MONITOR_NOT_CONNECTED, "Not connected to monitor" },
    { E_MONITOR_BAD_SEND, "Sending message to monitor failed." },
-   { E_MONITOR_NO_MSG, "No message available from directory." },
+   { E_MONITOR_NO_MSG, "No message available from directory." },   
+   { E_MONITOR_BAD_SELECT, "Bad select from monitor." },
+   { E_MONITOR_RECV_TIMEOUT, "Monitor timed out while recieving messages." },
    { E_MONITOR_BAD_RECV, "Error while attempting to read daat from directory." },
+   { E_MONITOR_BAD_SCAN_CHALLENGE, "Could not scan cram challenge from directory." },
+   { E_MONITOR_AUTH_FAILED, "Password authentication failed." },
+   { 0, "" },
 };
+
+char * get_baculua_error_desc(baculua_error_t err);
 
 char error_str[100];
 char * get_error_string();

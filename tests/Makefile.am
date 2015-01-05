@@ -1,1 +1,1 @@
-SUBDIRS =  monitor  util  baculua 
+SUBDIRS =  monitor  util  baculua  md5 

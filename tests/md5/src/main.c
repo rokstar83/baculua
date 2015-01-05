@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* monitor_tests.h --- monitor unit tests for baculua                         */
+/* main.c --- md5 unit tests for baculua                                      */
 /* Copyright (c) 2013 Thomas Hartman (rokstar83@gmail.com)                    */
 /*                                                                            */
 /* This program is free software; you can redistribute it and/or              */
@@ -13,19 +13,29 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              */
 /* GNU General Public License for more details.                               */
 /******************************************************************************/
-#ifndef MONITOR_TESTS_H_
-#define MONITOR_TESTS_H_
-
 #include <CUnit/CUnit.h>
-/* START TEST PROTOTYPES */
-void test_connect_monitor();
-void test_bad_connect();
-void test_send_message();
-void test_receive_message();
-void test_authenticate_monitor();
-void test_hmac();
-/* END TEST PROTOTYPES */
+#include <cunitsexpoutputter/sexp_outputter.h>
+#include <CUnit/TestDB.h>
+#include <stdio.h>
+#include "md5_tests.h"
 
-CU_pSuite monitor_test_suite();
+int main(int argc, char ** argv)
+{
+   CU_pSuite suite = NULL;
+   CU_ErrorCode err = CU_initialize_registry();
 
-#endif/* MONITOR_TESTS_H_ */
+   if(err != CUE_SUCCESS)
+      return 1;
+
+   suite = md5_test_suite();
+   if(suite == NULL) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   CU_sexp_set_output(stdout);
+   CU_sexp_run_tests();
+
+   CU_cleanup_registry();
+   return CU_get_error();
+}

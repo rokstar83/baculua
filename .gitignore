@@ -40,3 +40,16 @@ bin/*.so
 /tests/monitor/src/main.o
 /tests/monitor/src/monitor_tests.c~
 /.tests
+/tests/monitor/src/secret.h
+/GPATH
+/GRTAGS
+/GTAGS
+/baculua_connection.dump
+/bconsole_connection.dump
+/tests/md5/Makefile
+/tests/md5/src/#md5_tests.c#
+/tests/md5/src/.#md5_tests.c
+/tests/md5/src/.deps/main.Po
+/tests/md5/src/.deps/md5.Po
+/tests/md5/src/.deps/md5_tests.Po
+/tests/md5/src/Makefile

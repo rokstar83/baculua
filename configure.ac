@@ -31,4 +31,7 @@ AC_CONFIG_FILES([tests/util/src/Makefile])
 # tests/baculua
 AC_CONFIG_FILES([tests/baculua/Makefile])
 AC_CONFIG_FILES([tests/baculua/src/Makefile])
+# tests/md5
+AC_CONFIG_FILES([tests/md5/Makefile])
+AC_CONFIG_FILES([tests/md5/src/Makefile])
 AC_OUTPUT

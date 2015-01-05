@@ -15,6 +15,7 @@
 /******************************************************************************/
 #include "monitor_tests.h"
 #include "baculua_error.h"
+#include "secret.h"
 #include <monitor.h>
 
 /* START TEST DEFINITIONS */
@@ -81,7 +82,7 @@ void test_send_message()
       mon.director_name = "homer";
       mon.director_host_name = "homer";
 
-      err = send_message(&mon, "HODOR!");
+      err = send_message(&mon, "HODOR!", strlen("HODOR!"));
       CU_ASSERT_EQUAL(err, E_MONITOR_NOT_CONNECTED);
    }
 
@@ -89,13 +90,14 @@ void test_send_message()
    {
       monitor mon;
       int err;
+      char hodor[] = "HODOR!";
       
       init_monitor(&mon);
       mon.director_name = "homer";
       mon.director_host_name = "homer";
       
       CU_ASSERT_EQUAL(connect_monitor(&mon, 3), E_SUCCESS);      
-      CU_ASSERT_EQUAL(send_message(&mon, "HODOR!"), E_SUCCESS);
+      CU_ASSERT_EQUAL(send_message(&mon, hodor, strlen(hodor)), E_SUCCESS);
       disconnect_monitor(&mon);
    }
 
@@ -103,13 +105,14 @@ void test_send_message()
    {
       monitor mon;
       int err;
+      char hello[] = "Hello nestor calling\n";
       
       init_monitor(&mon);
       mon.director_name = "homer";
       mon.director_host_name = "homer";
       
       CU_ASSERT_EQUAL(connect_monitor(&mon, 3), E_SUCCESS);
-      CU_ASSERT_EQUAL(send_message(&mon, "Hello nestor calling\n"), E_SUCCESS);
+      CU_ASSERT_EQUAL(send_message(&mon, hello, strlen(hello)), E_SUCCESS);
       disconnect_monitor(&mon);
    }
 }
@@ -119,7 +122,6 @@ void test_receive_message()
    /* Test trying to get a message without a connected monitor */
    {
       monitor mon;
-      int err;
        
       init_monitor(&mon);
       mon.director_name = "homer";
@@ -141,10 +143,9 @@ void test_receive_message()
       
       CU_ASSERT_EQUAL(connect_monitor(&mon, 3), E_SUCCESS);
 
-//      err = receive_message(&mon, msg, sizeof(msg));
-      if(err == E_MONITOR_BAD_RECV) {
-//         fprintf(stderr, "Bad Recv, %s", strerror(errno));
-      }
+      err = receive_message(&mon, msg, sizeof(msg));
+      CU_ASSERT_EQUAL(err, E_MONITOR_RECV_TIMEOUT);
+
       disconnect_monitor(&mon); 
    } 
 
@@ -153,15 +154,34 @@ void test_receive_message()
       char msg[100];
       monitor mon;
       int err;
+      char hello[] = "Hello *UserAgent* calling\n";
       
       init_monitor(&mon);
       mon.director_name = "homer";
       mon.director_host_name = "homer";
       
       CU_ASSERT_EQUAL(connect_monitor(&mon, 3), E_SUCCESS);
-      CU_ASSERT_EQUAL(send_message(&mon, "Hello nestor calling\n"), E_SUCCESS);
-      CU_ASSERT_EQUAL(receive_message(&mon, msg, sizeof(msg)), E_SUCCESS);
+      CU_ASSERT_EQUAL(send_message(&mon, hello, strlen(hello)), E_SUCCESS);
+      err = receive_message(&mon, msg, sizeof(msg));
+      CU_ASSERT(err > 0);
       disconnect_monitor(&mon);
+   }
+}
+
+void test_authenticate_monitor()
+{
+   {
+      char msg[100];
+      int err;
+      monitor mon;
+
+      init_monitor(&mon);
+      mon.director_name = "homer";
+      mon.director_host_name = "homer";
+      mon.host_name = "nestor";
+      mon.passwd = monitor_passwd;
+      CU_ASSERT_EQUAL(connect_monitor(&mon, 3), E_SUCCESS);
+      CU_ASSERT_EQUAL(authenticate_monitor(&mon), E_SUCCESS);
    }
 }
 
@@ -176,7 +196,8 @@ CU_pSuite monitor_test_suite()
   CU_add_test(suite, "test_connect_monitor", test_connect_monitor);
   CU_add_test(suite, "test_bad_connect", test_bad_connect);
   CU_add_test(suite, "test_receive_message", test_receive_message);
-  CU_add_test(suite, "test_send_message", test_send_message);  
+  CU_add_test(suite, "test_send_message", test_send_message);
+  CU_add_test(suite, "test_authenticate_monitor", test_authenticate_monitor);
   /* ADD TESTS TO SUITE HERE */
 
   return suite;

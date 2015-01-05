@@ -17,18 +17,18 @@
 
 char * do_bacula_cmd(monitor * mon, const char * cmd)
 {
-	 int err;
-	 char * retval = NULL;
-	 if((err = connect_monitor(mon)) != 0) {
-			return retval;
-	 }
+   int err;
+   char * retval = NULL;
+   if((err = connect_monitor(mon)) != 0) {
+      return retval;
+   }
 
-	 if((err = send_message(mon, cmd)) != 0) {
-			disconnect_monitor(mon);
-			return retval;
-	 }
+   if((err = send_message(mon, cmd, strlen(cmd))) != 0) {
+      disconnect_monitor(mon);
+      return retval;
+   }
 
-	 retval = receive_message(mon);
-	 disconnect_monitor(mon);
-	 return retval;
+   retval = receive_message(mon);
+   disconnect_monitor(mon);
+   return retval;
 }

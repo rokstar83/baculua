@@ -16,7 +16,19 @@
 #include "baculua_error.h"
 #include <stdio.h>
 
+char * get_baculua_error_desc(baculua_error_t err_code)
+{
+   int x;
+   for(x = 0; baculua_error_desc[x].err != 0; ++x) {
+      if(baculua_error_desc[x].err == err_code) {
+         return baculua_error_desc[x].msg;
+      }
+   }
+
+   return "Unknown error code";
+}
+
 char * get_error_string()
 {
-	 return error_str;
+   return error_str;
 }
